@@ -1,35 +1,24 @@
 package ru.itis.chat.websockets.services.impl;
 
-import org.springframework.lang.NonNull;
+import lombok.AllArgsConstructor;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
 import ru.itis.chat.websockets.exceptions.AccessDeniedException;
 import ru.itis.chat.websockets.models.User;
 import ru.itis.chat.websockets.services.interfaces.AuthService;
+import ru.itis.chat.websockets.services.interfaces.SessionService;
 
 import java.util.Optional;
 
-import static org.springframework.web.context.request.RequestAttributes.SCOPE_SESSION;
-
 @Service
+@AllArgsConstructor
 class AuthServiceImpl implements AuthService {
 
-    @NonNull
-    private RequestAttributes getAttributes() {
-        var attributes = RequestContextHolder.getRequestAttributes();
-
-        if (attributes == null) {
-            throw new IllegalStateException("no request attributes found - should never be thrown");
-        }
-
-        return attributes;
-    }
+    private final SessionService sessionService;
 
     @Nullable
     private User getNullableUser() {
-        return (User) getAttributes().getAttribute("user", SCOPE_SESSION);
+        return (User) sessionService.getAttribute("user");
     }
 
     @Override
@@ -39,13 +28,7 @@ class AuthServiceImpl implements AuthService {
 
     @Override
     public User getUser() throws AccessDeniedException {
-        var user = getNullableUser();
-
-        if (user == null) {
-            throw new AccessDeniedException();
-        }
-
-        return user;
+        return getUserOptional().orElseThrow(AccessDeniedException::new);
     }
 
     @Override
@@ -67,11 +50,11 @@ class AuthServiceImpl implements AuthService {
 
     @Override
     public void authenticate(User user) {
-        getAttributes().setAttribute("user", user, SCOPE_SESSION);
+        sessionService.setAttribute("user", user);
     }
 
     @Override
     public void invalidate() {
-        getAttributes().removeAttribute("user", SCOPE_SESSION);
+        sessionService.removeAttribute("user");
     }
 }

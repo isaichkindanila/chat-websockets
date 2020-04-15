@@ -5,6 +5,8 @@
     <@H.body>
         <#if authenticated>
             <p>You are authenticated</p>
+            <a href="/chat">chat</a>
+            <a href="/signOut">sign out</a>
         <#else>
             <p>You are not authenticated</p>
             <a href="/signIn">sign in</a>

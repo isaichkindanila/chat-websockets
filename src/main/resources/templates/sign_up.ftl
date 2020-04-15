@@ -7,7 +7,7 @@
             <a href="/signIn">sign in</a>
         </div>
         <div>
-            <form action="/signUp" method="post">
+            <form action="/signUp" method="post" accept-charset="UTF-8">
                 <input type="text" name="username" placeholder="username">
                 <input type="password" name="password" placeholder="password">
                 <input type="submit" value="sign up">
